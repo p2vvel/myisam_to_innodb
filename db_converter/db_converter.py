@@ -1,5 +1,6 @@
 import re
 from pathlib import Path
+from typing import Union
 
 
 class Table:
@@ -23,7 +24,7 @@ class Table:
         except:
             return None
 
-    def get_primary_key(self) -> str | list[str]:
+    def get_primary_key(self) -> Union(str, list[str]):
         """
         Return name (or list of names) of column(s) that might be a primary key 
 

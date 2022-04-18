@@ -24,7 +24,7 @@ class Table:
         except:
             return None
 
-    def get_primary_key(self) -> Union(str, list[str]):
+    def get_primary_key(self) -> Union[str, list]:
         """
         Return name (or list of names) of column(s) that might be a primary key 
 
@@ -41,7 +41,7 @@ class Table:
         except:
             return None
 
-    def get_fields(self) -> list[str]:
+    def get_fields(self) -> list:
         """
         Get names of all cols in a table
 
@@ -52,7 +52,7 @@ class Table:
         fields = [k.replace("`", "") for k in fields]
         return list(set(fields))
 
-    def get_foreign_keys(self) -> list[str]:
+    def get_foreign_keys(self) -> list:
         """
         Find cols that might be foreign keys (name is usually _____Id)
 
@@ -63,7 +63,7 @@ class Table:
         keys = [k for k in keys if k != self.get_primary_key()]
         return keys
 
-    def get_converted_body(self, other_tables: dict[str, str]) -> str:
+    def get_converted_body(self, other_tables: dict) -> str:
         """
         Return query creating table with extra commands creating foreign keys 
         and changing DB engine to InnoDB (previously MyISAM)
@@ -88,7 +88,7 @@ class Table:
             temp = temp.replace(footer_template, foreign_section + footer_template)
             return temp
 
-    def get_alters(self, other_tables: dict[str, str]) -> list[str]:
+    def get_alters(self, other_tables: dict) -> list:
         """
         Get list of commands creating creating foreign keys for the table
 
@@ -109,7 +109,7 @@ class Table:
                 result.append(temp)
             return result
 
-    def get_data(self) -> dict[str, str]:
+    def get_data(self) -> dict:
         """
         Return dict with all attributes
 

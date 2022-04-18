@@ -158,9 +158,15 @@ def convert_dump_to_innodb(file: str, only_single_keys: bool = True) -> str:
         alters.extend(temp)
 
     if only_single_keys:
-        regex = r"PRIMARY KEY \(`.*?`(,`.*?`)+\),"  # primary key made of multiple columns
-        new_primary_key = "`pk` int(11) NOT NULL AUTO_INCREMENT,\nPRIMARY KEY (`pk`),"
-        new_sql = re.sub(regex, new_primary_key, new_sql)
+        # regex = r"PRIMARY KEY \(`.*?`(,`.*?`)+\),"  # primary key made of multiple columns
+        # new_primary_key = "`pk` int(11) NOT NULL AUTO_INCREMENT,\nPRIMARY KEY (`pk`),"
+        # new_sql = re.sub(regex, new_primary_key, new_sql)
+        for t in db_tables:
+            key =  db_tables[t].get_primary_key()
+            if isinstance(key, list):
+                name = db_tables[t].get_name()
+                alters.append(f"ALTER TABLE `{name}` DROP PRIMARY KEY;")
+                alters.append(f"ALTER TABLE `{name}` ADD COLUMN `pk` int(11) PRIMARY KEY AUTO_INCREMENT;")
     
     # add alters creating foreign keys at the end of new .sql file
     new_sql += "\n"*3 + "\n".join(alters)
@@ -172,5 +178,5 @@ def convert_dump_to_innodb(file: str, only_single_keys: bool = True) -> str:
 
 
 if __name__ == "__main__":
-    # convert_dump_to_innodb("f1db.sql")
+    convert_dump_to_innodb("/home/pawel/Dokumenty/workspace/myisam_to_innodb/f1db.sql")
     pass

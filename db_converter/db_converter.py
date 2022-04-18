@@ -125,12 +125,15 @@ class Table:
         }
 
 
-def convert_dump_to_innodb(file: str) -> str:
+def convert_dump_to_innodb(file: str, only_single_keys: bool = True) -> str:
     """
     Import sql file and convert it to use InnoDB and foreign keys
 
     Args:
         file (str): path to Ergast DB dump.
+        only_single_keys (bool): some tools (e.g. Django models) don't support primary keys 
+                                 made of multiple columns. If set to true, will create new column `id`
+                                 that will be primary key instead. (defaults to True)
     Returns:
         (str): path to the new, converted .sql file
     """
@@ -153,6 +156,12 @@ def convert_dump_to_innodb(file: str) -> str:
     for t in db_tables:
         temp = db_tables[t].get_alters(foreign_keys)
         alters.extend(temp)
+
+    if only_single_keys:
+        regex = r"PRIMARY KEY \(`.*?`(,`.*?`)+\),"  # primary key made of multiple columns
+        new_primary_key = "`pk` int(11) NOT NULL AUTO_INCREMENT,\nPRIMARY KEY (`pk`),"
+        new_sql = re.sub(regex, new_primary_key, new_sql)
+    
     # add alters creating foreign keys at the end of new .sql file
     new_sql += "\n"*3 + "\n".join(alters)
     new_file = file_path.parent / Path(str(file_path.stem) + "_innodb" + str(file_path.suffix))

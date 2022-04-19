@@ -166,7 +166,7 @@ def convert_dump_to_innodb(file: str, only_single_keys: bool = True) -> str:
             if isinstance(key, list):
                 name = db_tables[t].get_name()
                 alters.append(f"ALTER TABLE `{name}` DROP PRIMARY KEY;")
-                alters.append(f"ALTER TABLE `{name}` ADD COLUMN `pk` int(11) PRIMARY KEY AUTO_INCREMENT;")
+                alters.append(f"ALTER TABLE `{name}` ADD COLUMN `id` int(11) PRIMARY KEY AUTO_INCREMENT;")
     
     # add alters creating foreign keys at the end of new .sql file
     new_sql += "\n"*3 + "\n".join(alters)
